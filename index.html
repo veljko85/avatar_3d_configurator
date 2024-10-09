@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta
+      http-equiv="Content-Type"
+      content="text/html; charset=utf-8, initial-scale=1"
+    />
+    <title>Avatar</title>
+
+    
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <!-- lootie -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.6.4/lottie_svg.min.js"></script>
+
+    <!-- fabric -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/3.6.2/fabric.min.js"></script>
+    <script type="module" crossorigin src="/assets/index-3377eb6c.js"></script>
+    <link rel="stylesheet" href="/assets/index-6f2f0dc7.css">
+  </head>
+
+  <body>
+
+    <!-- loading spinner -->
+    <div id="loadingSpinner" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 1); z-index: 9999; display: flex; justify-content: center; align-items: center;">
+      <div style="border: 4px solid rgba(0, 0, 0, 0.1); width: 50px; height: 50px; border-radius: 50%; border-left-color: #1e57f1; animation: spin 1s linear infinite; @keyframes spin {0% {transform: rotate(0deg);} 100% {transform: rotate(360deg);}}"></div>
+      <div id="loadingPercentages" style="position: absolute; font-style: bold;">0%</div>
+    </div>
+    <!-- main Babylon.js canvas -->
+    <canvas id="renderCanvas" touch-action="none"></canvas>
+
+      <!-- configurator menu -->
+      <div class="conf-btn-cont">
+        <!-- main menu buttons -->
+        <div class="conf-button main-conf-button main-conf-button-act" id="home">
+          <h5>Home</h5>
+        </div>
+        <div class="conf-button main-conf-button" id="gender">
+          <h5>Gender</h5>
+        </div>
+        <div class="conf-button main-conf-button" id="skin">
+          <h5>Skin Color</h5>
+        </div>
+        <div class="conf-button main-conf-button head" id="face">
+          <h5>Face</h5>
+        </div>
+        <div class="conf-button main-conf-button hiddenByDefault head" id="eyes">
+          <h5>Eyes Color</h5>
+        </div>
+        <div class="conf-button main-conf-button hiddenByDefault head" id="hairstyle">
+          <h5>Hairstyle</h5>
+        </div>
+        <div class="conf-button main-conf-button hiddenByDefault head" id="facialhairstyle">
+          <h5>Facial Hair Style</h5>
+        </div>
+        <div class="conf-button main-conf-button clothing" id="tops">
+          <h5>Tops</h5>
+        </div>
+        <div class="conf-button main-conf-button hiddenByDefault clothing" id="bottoms">
+          <h5>Bottoms</h5>
+        </div>
+        <div class="conf-button main-conf-button hiddenByDefault clothing" id="fullbody">
+          <h5>Full Body</h5>
+        </div>
+        <div class="conf-button main-conf-button hiddenByDefault clothing" id="shoes">
+          <h5>Shoes</h5>
+        </div>
+        <div class="conf-button main-conf-button accessories" id="accessories">
+          <h5>Accessories</h5>
+        </div>
+        <div class="conf-button main-conf-button hiddenByDefault accessories" id="hats">
+          <h5>Hats</h5>
+        </div>
+        <div class="conf-button main-conf-button hiddenByDefault accessories" id="belts">
+          <h5>Belts</h5>
+        </div>
+        <div class="conf-button main-conf-button hiddenByDefault accessories" id="glasses">
+          <h5>Glasses</h5>
+        </div>
+        <div class="conf-button main-conf-button hiddenByDefault accessories" id="jewelery">
+          <h5>Jewelery</h5>
+        </div>
+        <div class="conf-button main-conf-button" id="animations">
+          <h5>Animations</h5>
+        </div>
+        <div class="conf-button main-conf-button" id="save">
+          <h5>Save</h5>
+        </div>
+      </div>
+      
+      <div id="conf-right-width"></div>
+      <!-- side menu -->
+      <div id="conf-right">
+        <!-- home -->
+        <div class="conf-right-part triple-row">
+          <div class="white">
+            <!-- show names of nodes when clicked (not visible in AVB) -->
+            <div class="conf-right-part-part advanced">
+              <h5>Show Node Names</h5>
+              <input id="showNodeNames" type="checkbox" />
+            </div>
+            <!-- avatar name input -->
+            <h2>Your Avatar's Name</h2>
+            <div class="conf-right-part-part">
+              <input id="avatarName" type="text" placeholder="Enter a name.." />
+            </div>
+            <br>
+            <br>
+            <!-- (not visible in AVB) -->
+            <div class="advanced">
+              <br><button id="copyAuthToken" style="height: 20px;">Copy Auth Parameters</button>
+            </div>
+            <!-- json to preload (not visible in AVB) -->
+            <div  class="advanced">
+              <h5>Capture Image</h5>
+              <textarea id="propsJson" name="propsJson" rows="4" cols="50">
+                {"name":"Mia","preset":{"gender":"female","face_style_detected":true,"face_style":"female_face_2_geo_primitive0","skin_color_detected":true,"skin_color_style":"m_skin_female_black","eye_color_detected":true,"eye_color":"m_eye_blue","hair_detected":true,"hair_style_detected":true,"hair_style":"female_hair_2_geo","hair_color_detected":true,"hair_color_hex":["#000000"],"hair_texture":"m_hair_mousy","facial_hair_detected":false,"top_detected":true,"top_style":["female_tanktop_1_geo"],"top_color_detected":true,"tops_color_hex":[["#FFFFFF"]],"bottom_detected":true,"bottom_style":"female_jeans_1_geo","bottom_color_detected":true,"bottom_color_hex":["#586586"],"full_body_detected":false,"full_body_color_detected":true,"full_body_color_hex":[],"shoes_detected":true,"shoes_style":"shoes_skater_1_geo","hat_detected":false,"hats_color_detected":true,"hats_hex_color":[],"belt_detected":false,"belt_style":[],"glasses_detected":false,"sunglasses_detected":false,"jewelery_detected":false,"accessories_detected":true,"accessories":["scarf_1_geo"],"accessories_color_detected":true,"accessories_hex_color":[["#77D6FF"]],"face_shape":"Pear"},"headImage":"https://pluralproductionbackend.blob.core.windows.net/avatars/e16bd119-af58-4013-9430-b505cf748987.png"}
+              </textarea>
+              <h3>Click here to generate the Avatar from the preset above:</h3>
+              <div id="generatePropsBtn" class="conf-button">Generate</div>
+            </div>
+          </div>
+          <!-- preset avatars -->
+          <h3 id="customAvatarsHeadingPlural">
+            Your own custom Avatars from Plural:
+          </h3>
+          <div id="presetsCustomPlural" style="display: flex; flex-wrap: wrap">
+            You have not saved any Avatars to your organization yet.
+          </div>
+          <h3>Avatars from Plural.io:</h3>
+          <div
+            id="presetsAirtable"
+            style="display: flex; flex-wrap: wrap"
+          ></div>
+        </div>
+
+        <!-- gender -->
+        <div class="conf-right-part single-row">
+          <div class="conf-right-part-part">
+            <div class="conf-button gender-parts conf-button-act" id="female">
+              <h5>Female</h5>
+            </div>
+            <div class="conf-button gender-parts" id="male">
+              <h5>Male</h5>
+            </div>
+          </div>
+        </div>
+
+        <!-- change face -->
+        <div class="conf-right-part single-row">
+          <!-- faces import div -->
+          <div class="conf-right-part-part face-parent"></div>
+        </div>
+
+        <!-- skin color -->
+        <div class="conf-right-part single-row">
+          <!-- skin color import div -->
+          <div class="conf-right-part-part skin-parent"></div>
+        </div>
+
+        <!-- eye color -->
+        <div class="conf-right-part single-row">
+          <!-- eye color import div -->
+          <div class="conf-right-part-part eyes-parent"></div>
+        </div>
+
+        <!-- hair style -->
+        <div class="conf-right-part triple-row">
+          <!-- hairstyles import div -->
+          <div class="conf-right-part-part hairstyles-parent"></div>
+          <!-- hairstyles options -->
+          <div class="conf-right-part-part">
+            <!-- color -->
+            <div>
+              <h6 style="display: inline">Color</h6>
+              <div class="color-picker-holder" id="colorPickerHolderHair"></div>
+            </div>
+            <div
+              class="color-picker-containers"
+              id="colorPickerHairContainer"
+            ></div>
+            <!-- textures -->
+            <div>
+              <h6 style="display: inline">Hair Texture 1</h6>
+              <div
+                class="color-picker-holder hairTextures activeTextures"
+                id="hairTextureOne"
+              ></div>
+            </div>
+            <div>
+              <h6 style="display: inline">Hair Texture 2</h6>
+              <div
+                class="color-picker-holder hairTextures"
+                id="hairTextureTwo"
+              ></div>
+            </div>
+            <div>
+              <h6 style="display: inline">Hair Texture 3</h6>
+              <div
+                class="color-picker-holder hairTextures"
+                id="hairTextureThree"
+              ></div>
+            </div>
+            <div>
+              <h6 style="display: inline">Hair Texture 4</h6>
+              <div
+                class="color-picker-holder hairTextures"
+                id="hairTextureFour"
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- facial hair style -->
+        <div class="conf-right-part single-row">
+          <!-- facial hair import div -->
+          <div class="conf-right-part-part facial-hairstyles-parent"></div>
+        </div>
+
+        <!-- tops -->
+        <div class="conf-right-part triple-row">
+          <!-- tops layers -->
+          <div id="tops-nav-btns-con">
+            <div class="tops-nav-btn" id="topsNavBtnBase"><h5>Base Layer</h5></div>
+            <div class="tops-nav-btn" id="topsNavBtnMiddle"><h5>Mid Layer</h5></div>
+            <div class="tops-nav-btn" id="topsNavBtnTop"><h5>Top Layer</h5></div>
+          </div>
+          
+          <!-- base top parts -->
+          <div class="change-tops-part" id="topsBasePart">
+            <h5 style="margin-bottom: 10px;">Change Base Layer</h5>
+            <!-- tops base import div -->
+            <div class="conf-right-part-part tops-base-parent"></div>
+            <!-- colors -->
+            <div class="conf-right-part-part">
+              <!-- tops base main color -->
+              <div id="topsBaseColorOneHolderContainer">
+                <h6 style="display: inline">Color Clothes</h6>
+                <div
+                  class="color-picker-holder"
+                  id="colorPickerHolderTopsBase"
+                ></div>
+              </div>
+              <div
+                class="color-picker-containers"
+                id="colorPickerTopsBaseContainer"
+              ></div>
+              <!-- tops base second color -->
+              <div id="topsBaseColorTwoHolderContainer">
+                <h6 style="display: inline">Color Clothes 2</h6>
+                <div
+                  class="color-picker-holder"
+                  id="colorPickerHolderTopsBaseSecond"
+                ></div>
+              </div>
+              <div
+                class="color-picker-containers color-picker-second-container"
+                id="colorPickerTopsBaseSecondContainer"
+              ></div>
+              <!-- tops base button color -->
+              <div id="topsBaseColorBtnHolderContainer">
+                <h6 style="display: inline">Color Buttons</h6>
+                <div
+                  class="color-picker-holder"
+                  id="colorPickerHolderTopsBaseBtns"
+                ></div>
+              </div>
+              <div
+                class="color-picker-containers color-picker-third-container"
+                id="colorPickerTopsBaseBtnsContainer"
+              ></div>
+            </div>
+            <!-- tops base textures -->
+            <div class="conf-right-part-part">
+              <!-- base (no) texture -->
+              <div id="baseTextureContainer">
+                <h6 style="display: inline">No Texture</h6>
+                <div
+                  class="color-picker-holder topsBaseTextureHolder activeTextures"
+                  id="baseTexture"
+                ></div>
+              </div>
+              <!-- striped texture -->
+              <div id="stripedBaseTextureContainer">
+                <h6 style="display: inline">Striped</h6>
+                <div
+                  class="color-picker-holder topsBaseTextureHolder"
+                  id="stripedBaseTexture"
+                ></div>
+              </div>
+              <!-- striped 2 texture -->
+              <div id="stripedBaseTexture2Container">
+                <h6 style="display: inline">Striped 2</h6>
+                <div
+                  class="color-picker-holder topsBaseTextureHolder"
+                  id="stripedBaseTexture2"
+                ></div>
+              </div>
+            </div>
+            <!-- tops base logo -->
+            <div class="tops-addLogo">
+              <h5 style="margin-bottom: 10px;">Add Logo</h5>
+              <div class="conf-right-part-part">
+                <!-- upload logo -->
+                <form class="upload" id="upload" style="float: left">
+                  <label
+                    class="conf-button"
+                    for="file-upload"
+                    style="display: flex"
+                  >
+                    <h5>Upload Logo</h5>
+                  </label>
+                  <input
+                    id="file-upload"
+                    type="file"
+                    name="uploadFile"
+                    accept="image/*"
+                    required
+                    style="display: none"
+                  />
+                </form>
+                <!-- remove logo -->
+                <div class="conf-button" id="removelogo">
+                  <h5>Remove Logo</h5>
+                </div>
+              </div>
+            </div>
+            <!-- logo canvas -->
+            <div class="tops-changeLogoPosition">
+              <div class="conf-right-part-part">
+                <h5>Change Logo Position and Size</h5>
+                <div class="conf-right-part-part">
+                  <div id="paintCanvasParent" style="position:relative; overflow:hidden; border:2px solid rgb(0, 0, 0)">
+                    <canvas id="paintCanvas" class="paintCanvas"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- logo position -->
+            <div class="conf-right-part-part tops-chooseLogoPosition">
+              <h5>Choose Logo Position</h5>
+              <div class="conf-button logo-side conf-button-act">
+                <h5>Left</h5>
+              </div>
+              <div class="conf-button logo-side">
+                <h5>Center</h5>
+              </div>
+              <div class="conf-button logo-side">
+                <h5>Right</h5>
+              </div>
+            </div>
+          </div>
+
+          <!-- middle top parts -->
+          <div class="change-tops-part" id="topsMiddlePart">
+            <h5 style="margin-bottom: 10px;">Change Mid Layer</h5>
+            <!-- tops middle import div -->
+            <div class="conf-right-part-part tops-middle-parent"></div>
+            <!-- colors -->
+            <div class="conf-right-part-part">
+              <!-- tops middle main color -->
+              <div>
+                <h6 style="display: inline">Color Clothes</h6>
+                <div
+                  class="color-picker-holder"
+                  id="colorPickerHolderTopsMiddle"
+                ></div>
+              </div>
+              <div
+                class="color-picker-containers"
+                id="colorPickerTopsMiddleContainer"
+              ></div>
+              <!-- tops middle buttons color -->
+              <div>
+                <h6 style="display: inline">Color Buttons</h6>
+                <div
+                  class="color-picker-holder"
+                  id="colorPickerHolderTopsMiddleBtns"
+                ></div>
+              </div>
+              <div
+                class="color-picker-containers color-picker-second-container"
+                id="colorPickerTopsMiddleBtnsContainer"
+              ></div>
+            </div>
+            <!-- tops middle logo -->
+            <div class="tops-addLogo">
+              <h5 style="margin-bottom: 10px;">Add Logo</h5>
+              <div class="conf-right-part-part">
+                <!-- upload logo -->
+                <form class="upload" id="uploadLogoTopsMiddle" style="float: left">
+                  <label
+                    class="conf-button"
+                    for="file-upload-topsMiddle"
+                    style="display: flex"
+                  >
+                    <h5>Upload Logo</h5>
+                  </label>
+                  <input
+                    id="file-upload-topsMiddle"
+                    type="file"
+                    name="uploadFile"
+                    accept="image/*"
+                    required
+                    style="display: none"
+                  />
+                </form>
+                <!-- remove logo -->
+                <div class="conf-button" id="removelogoTopsMiddle">
+                  <h5>Remove Logo</h5>
+                </div>
+              </div>
+            </div>
+            <!-- logo canvas -->
+            <div class="tops-changeLogoPosition">
+              <h5>Change Logo Position and Size</h5>
+              <div class="conf-right-part-part">
+                <div id="paintCanvasTopsMiddleParent" style="position:relative; overflow:hidden; border:2px solid rgb(0, 0, 0)">
+                  <canvas
+                    id="paintCanvasTopsMiddle"
+                    class="paintCanvasTopsMiddle"
+                  ></canvas>
+                </div>
+              </div>
+            </div>
+            <!-- logo position -->
+            <div class="conf-right-part-part tops-chooseLogoPosition">
+              <h5>Choose Logo Position</h5>
+              <div class="conf-button logo-side-topsMiddle conf-button-act">
+                <h5>Left</h5>
+              </div>
+              <div class="conf-button logo-side-topsMiddle">
+                <h5>Center</h5>
+              </div>
+              <div class="conf-button logo-side-topsMiddle">
+                <h5>Right</h5>
+              </div>
+            </div>
+          </div>
+
+          <!-- top top parts -->
+          <div class="change-tops-part" id="topsTopPart">
+            <h5 style="margin-bottom: 10px;">Change Top Layer</h5>
+            <!-- tops top import div -->
+            <div class="conf-right-part-part tops-top-parent"></div>
+            <!-- colors -->
+            <div class="conf-right-part-part">
+              <!-- tops top main color -->
+              <div>
+                <h6 style="display: inline">Color Clothes</h6>
+                <div
+                  class="color-picker-holder"
+                  id="colorPickerHolderTopsTop"
+                ></div>
+              </div>
+              <div
+                class="color-picker-containers"
+                id="colorPickerTopsTopContainer"
+              ></div>
+              <!-- tops top buttons color -->
+              <div>
+                <h6 style="display: inline">Color Buttons</h6>
+                <div
+                  class="color-picker-holder"
+                  id="colorPickerHolderTopsTopBtns"
+                ></div>
+              </div>
+              <div
+                class="color-picker-containers color-picker-second-container"
+                id="colorPickerTopsTopBtnsContainer"
+              ></div>
+              <!-- tops top apron color 2 -->
+              <div>
+                <h6 style="display: inline">Apron Color 2</h6>
+                <div
+                  class="color-picker-holder"
+                  id="colorPickerHolderTopsTopSecond"
+                ></div>
+              </div>
+              <div
+                class="color-picker-containers color-picker-third-container"
+                id="colorPickerTopsTopSecondContainer"
+              ></div>
+            </div>
+            <!-- tops top logo -->
+            <div class="tops-addLogo">
+              <h5 style="margin-bottom: 10px;">Add Logo</h5>
+              <div class="conf-right-part-part">
+                <!-- upload logo -->
+                <form class="upload" id="uploadLogoTopsTop" style="float: left">
+                  <label
+                    class="conf-button"
+                    for="file-upload-topsTop"
+                    style="display: flex"
+                  >
+                    <h5>Upload Logo</h5>
+                  </label>
+                  <input
+                    id="file-upload-topsTop"
+                    type="file"
+                    name="uploadFile"
+                    accept="image/*"
+                    required
+                    style="display: none"
+                  />
+                </form>
+                <!-- remove logo -->
+                <div class="conf-button" id="removelogoTopsTop">
+                  <h5>Remove Logo</h5>
+                </div>
+              </div>
+            </div>
+            <!-- canvas logo -->
+            <div class="tops-changeLogoPosition">
+              <h5>Change Logo Position and Size</h5>
+              <div class="conf-right-part-part">
+                <div id="paintCanvasTopsTopParent" style="position:relative; overflow:hidden; border:2px solid rgb(0, 0, 0)">
+                  <canvas
+                    id="paintCanvasTopsTop"
+                    class="paintCanvasTopsTop"
+                  ></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="conf-right-part-part tops-chooseLogoPosition">
+            <!-- logo position -->
+            <h5>Choose Logo Position</h5>
+            <div class="conf-button logo-side-topsTop conf-button-act">
+              <h5>Left</h5>
+            </div>
+            <div class="conf-button logo-side-topsTop">
+              <h5>Center</h5>
+            </div>
+            <div class="conf-button logo-side-topsTop">
+              <h5>Right</h5>
+            </div>
+          </div>
+          </div>
+        </div>
+
+        <!-- bottoms -->
+        <div class="conf-right-part single-row">
+          <!-- bottoms import div -->
+          <div class="conf-right-part-part bottoms-parent"></div>
+          <!-- bottoms colors -->
+          <div class="conf-right-part-part">
+            <div>
+              <h6 style="display: inline">Color Clothes</h6>
+              <div
+                class="color-picker-holder"
+                id="colorPickerHolderBottoms"
+              ></div>
+            </div>
+            <div
+              class="color-picker-containers"
+              id="colorPickerBottomsContainer"
+            ></div>
+          </div>
+        </div>
+
+        <!-- full body -->
+        <div class="conf-right-part triple-row">
+          <!-- full body import div -->
+          <div class="conf-right-part-part fullbody-parent"></div>
+          <!-- full body colors -->
+          <div class="conf-right-part-part">
+            <!-- full body main color -->
+            <div id="fullBodyColorOneHolderContainer">
+              <h6 style="display: inline">Color Clothes</h6>
+              <div
+                class="color-picker-holder"
+                id="colorPickerHolderFullBody"
+              ></div>
+            </div>
+            <div
+              class="color-picker-containers"
+              id="colorPickerFullBodyContainer"
+            ></div>
+            <!-- full body second color -->
+            <div id="fullBodyColorTwoHolderContainer">
+              <h6 style="display: inline">Color Clothes 2</h6>
+              <div
+                class="color-picker-holder"
+                id="colorPickerHolderFullBodySecond"
+              ></div>
+            </div>
+            <div
+              class="color-picker-containers color-picker-second-container"
+              id="colorPickerFullBodySecondContainer"
+            ></div>
+            <!-- full body buttonns color -->
+            <div id="fullBodyColorBtnHolderContainer">
+              <h6 style="display: inline">Color Buttons</h6>
+              <div
+                class="color-picker-holder"
+                id="colorPickerHolderFullBodyBtns"
+              ></div>
+            </div>
+            <div
+              class="color-picker-containers color-picker-third-container"
+              id="colorPickerFullBodyBtnsContainer"
+            ></div>
+          </div>
+          <!-- full body logo -->
+          <div class="tops-addLogo">
+            <h5 style="margin-bottom: 10px;">Add Logo</h5>
+            <div class="conf-right-part-part">
+              <!-- upload logo -->
+              <form class="upload" id="uploadLogoFullBody" style="float: left">
+                <label
+                  class="conf-button"
+                  for="file-upload-fullBody"
+                  style="display: flex"
+                >
+                  <h5>Upload Logo</h5>
+                </label>
+                <input
+                  id="file-upload-fullBody"
+                  type="file"
+                  name="uploadFile"
+                  accept="image/*"
+                  required
+                  style="display: none"
+                />
+              </form>
+              <!-- remove logo -->
+              <div class="conf-button" id="removelogoFullBody">
+                <h5>Remove Logo</h5>
+              </div>
+            </div>
+          </div>
+          <!-- logo canvas -->
+          <div class="tops-changeLogoPosition">
+            <h5>Change Logo Position and Size</h5>
+            <div class="conf-right-part-part">
+              <div id="paintCanvasFullBodyParent" style="position:relative; overflow:hidden; border:2px solid rgb(0, 0, 0)">
+                <canvas
+                  id="paintCanvasFullBody"
+                  class="paintCanvasFullBody"
+                ></canvas>
+              </div>
+            </div>
+          </div>
+          <!-- logo position -->
+          <div class="conf-right-part-part tops-chooseLogoPosition">
+            <h5>Choose Logo Position</h5>
+            <div class="conf-button logo-side-fullbody conf-button-act">
+              <h5>Left</h5>
+            </div>
+            <div class="conf-button logo-side-fullbody">
+              <h5>Center</h5>
+            </div>
+            <div class="conf-button logo-side-fullbody">
+              <h5>Right</h5>
+            </div>
+          </div>
+        </div>
+
+        <!-- shoes -->
+        <div class="conf-right-part single-row">
+          <!-- shoes import div -->
+          <div class="conf-right-part-part shoes-parent"></div>
+        </div>
+
+        <!-- hats -->
+        <div class="conf-right-part single-row">
+          <!-- hats import div -->
+          <div class="conf-right-part-part hats-parent"></div>
+          <!-- colors -->
+          <div class="conf-right-part-part">
+            <!-- hats main color -->
+            <div>
+              <h6 style="display: inline">Color Clothes</h6>
+              <div class="color-picker-holder" id="colorPickerHolderHats"></div>
+            </div>
+            <div
+              class="color-picker-containers"
+              id="colorPickerHatsContainer"
+            ></div>
+            <div id="headwearTextureContainer" style="display: none">
+              <h6 style="display: inline">Headwear Texture</h6>
+              <div
+                class="color-picker-holder"
+                id="headwearTextureArabicPattern"
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- belts -->
+        <div class="conf-right-part single-row">
+          <!-- belts import div -->
+          <div class="conf-right-part-part belts-parent"></div>
+          <!-- belts options -->
+          <div class="conf-right-part-part">
+            <!-- belts leather color -->
+            <div>
+              <h6 style="display: inline">Leather Color</h6>
+              <div
+                class="color-picker-holder"
+                id="colorPickerHolderBelts"
+              ></div>
+            </div>
+            <div
+              class="color-picker-containers"
+              id="colorPickerBeltsContainer"
+            ></div>
+            <!-- belts metal textures -->
+            <div>
+              <h6 style="display: inline">Steel</h6>
+              <div
+                class="color-picker-holder beltMetalTextures"
+                id="beltMetalTextureSteel"
+              ></div>
+            </div>
+            <div>
+              <h6 style="display: inline">Silver</h6>
+              <div
+                class="color-picker-holder beltMetalTextures"
+                id="beltMetalTextureSilver"
+              ></div>
+            </div>
+            <div>
+              <h6 style="display: inline">Gold</h6>
+              <div
+                class="color-picker-holder beltMetalTextures activeTextures"
+                id="beltMetalTextureGold"
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- glasses -->
+        <div class="conf-right-part single-row">
+          <!-- glasses import div -->
+          <div class="conf-right-part-part glasses-parent"></div>
+        </div>
+
+        <!-- jewelery -->
+        <div class="conf-right-part single-row">
+          <!-- jewelery import div -->
+          <div class="conf-right-part-part jewelery-parent"></div>
+        </div>
+
+        <!-- accessories -->
+        <div class="conf-right-part single-row">
+          <!-- accessories import div -->
+          <div class="conf-right-part-part accessories-parent"></div>
+          <!-- colors -->
+          <div class="conf-right-part-part">
+            <div>
+              <h6 style="display: inline">Color</h6>
+              <div
+                class="color-picker-holder"
+                id="colorPickerHolderAccessories"
+              ></div>
+            </div>
+            <div
+              class="color-picker-containers"
+              id="colorPickerAccessoriesContainer"
+            ></div>
+          </div>
+        </div>
+
+        <!-- animations -->
+        <div class="conf-right-part triple-row">
+          <h5>Play Animations</h5>
+          <!-- animations import div -->
+          <div class="conf-right-part-part animations-parent"></div>
+        </div>
+
+        <!-- save -->
+        <div class="conf-right-part triple-row white">
+          <h2>Upload or Update your Avatar</h2>
+          <!-- download 3d model, screenshots (not visible in AVB) -->
+          <div class="conf-right-part-part advanced">
+            <div class="conf-button screenshot-parts">
+              <h5>Body Screenshot</h5>
+            </div>
+            <div class="conf-button screenshot-parts">
+              <h5>Head Screenshot</h5>
+            </div>
+            <div class="conf-button" id="downLoadModel">
+              <h5>Download 3D Model</h5>
+            </div>
+          </div>
+          <!-- save avatar -->
+          <div class="conf-right-part-part">
+            <!-- save json (not visible in AVB) -->
+            <a class="advanced" id="saveJsonFile"
+              ><div class="conf-button">
+                <h5>Save Json File</h5>
+              </div>
+            </a>
+            <!-- save to airtable -->
+            <div class="conf-button" id="btnSaveToAirtable">
+              <h5>Save new Avatar</h5>
+            </div>
+            <!-- update to airtable -->
+            <div class="conf-button" id="btnUpdateToAirtable">
+              <h5>Update existing Avatar</h5>
+            </div>
+          </div>
+          <p>Select "Save" if you want to upload it as a new Avatar.<br>Select "Update" if you want to overwrite the already existing Avatar in your organisation.</p>
+          <!-- json of created avatar (not visible in AVB) -->
+          <div class="advanced">
+            <h5>Avatar JSON</h5>
+            <textarea
+                    id="savedPropsJson"
+                    name="savedPropsJson"
+                    rows="4"
+                    cols="50"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+      <!-- END CONFIGURATOR RIGHT -->
+    </div>
+    <!-- END MAIN COONTAINER -->
+    
+    <!-- main js file -->
+    
+  </body>
+</html>
